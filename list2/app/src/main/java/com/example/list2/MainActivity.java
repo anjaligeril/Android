@@ -1,6 +1,7 @@
 package com.example.list2;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -30,24 +31,41 @@ public class MainActivity extends AppCompatActivity {
          users.add("jane");
          users.add("alex");
          users.add("sam");   */
-       adaptorUpdate(users);
-
+      /* adaptorUpdate(users);*/
+        adaptorUpdate();
 
     }
   public void onClick(View v){
      EditText userName1=(EditText)findViewById(R.id.listContent);
       // String userName = ((EditText)findViewById(R.id.listContent)).getText().toString();
-      String userName =userName1.getText().toString();
-      userName1.clearFocus();
+     /* String userName =userName1.getText().toString();
+      userName1.clearFocus();*/
         //      Toast.makeText(this,"update user"+userName,Toast.LENGTH_LONG).show();
      //  String name=userName.toString();
-       users.add(userName);
+   /*   users.add(userName);*/
        //userData.notifyDataSetChanged();
-      adaptorUpdate(users);
+   /*  adaptorUpdate(users);*/
+
+      DBHelper dbH=new DBHelper(this);
+      boolean result=dbH.addUser(userName1.getText().toString());
+      if(result){
+          Toast.makeText(this,"inserted successfully",Toast.LENGTH_LONG).show();
+      }else{
+          Toast.makeText(this,"failed",Toast.LENGTH_LONG).show();
+      }
+    /*  adaptorUpdate(users);*/
+
+      adaptorUpdate();
    }
 
-   public void adaptorUpdate(List users){
-       userData=new ArrayAdapter<String>(this,R.layout.activity_list_component,R.id.listName,users);
+   public void adaptorUpdate(/*List users*/){
+        ArrayList<String> userDataFromDB=new ArrayList<>();
+        DBHelper dbH=new DBHelper(this);
+        Cursor data=dbH.getData();
+        while(data.moveToNext()){
+            userDataFromDB.add(data.getString(1));
+        }
+       userData=new ArrayAdapter<String>(this,R.layout.activity_list_component,R.id.listName,/*users*/userDataFromDB);
        ListView lv=(ListView)findViewById(R.id.list);
        lv.setAdapter(userData);
        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -64,5 +82,9 @@ public class MainActivity extends AppCompatActivity {
       // Toast.makeText(this,"update user",Toast.LENGTH_LONG).show();
    }
 
+   public void updateList(){
+
+
+   }
 
 }
